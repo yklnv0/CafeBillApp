@@ -265,17 +265,19 @@ namespace CafeBillApp
                 {
                     foreach (var item in bill)
                     {
+                        // Зберігаємо лише назву та ціну
                         writer.WriteLine($"{item.Description},{item.Price:F2}");
                     }
                 }
 
-                Console.WriteLine($"Write to file {fullPath} was successful.");
+                Console.WriteLine($"Write to file '{fullPath}' was successful.");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error writing file: {ex.Message}");
             }
         }
+
         public static void LoadFromFile()
         {
             Console.Write("Enter the file name to load items from (without .csv): ");
@@ -306,10 +308,11 @@ namespace CafeBillApp
                     if (parts.Length != 2) continue;
 
                     string description = parts[0].Trim();
-                    if (!double.TryParse(parts[1], out double price) || price <= 0)
-                        continue;
+                    string priceStr = parts[1].Trim();
 
-                    if (description.Length < 3 || description.Length > 20)
+                    if (string.IsNullOrWhiteSpace(description) ||
+                        !double.TryParse(priceStr, out double price) ||
+                        price <= 0)
                         continue;
 
                     loadedItems.Add(new MenuItem(description, price));
@@ -325,13 +328,14 @@ namespace CafeBillApp
 
                 bill = loadedItems;
                 tipAmount = 0;
-                Console.WriteLine($"Read from {fullPath} was successful.");
+                Console.WriteLine($"Read from '{fullPath}' was successful.");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error loading file: {ex.Message}");
             }
         }
+
 
 
     }
