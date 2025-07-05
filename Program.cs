@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace CafeBillApp
 {
@@ -33,6 +34,9 @@ namespace CafeBillApp
                     case "5":
                         ClearAll();
                         break;
+                    case "6":
+                        SaveToFile();
+                        break;
                     case "0":
                         Console.WriteLine("Goodbye!");
                         return;
@@ -55,6 +59,7 @@ namespace CafeBillApp
             Console.WriteLine("| ║ 3. Add Tip            ║ |");
             Console.WriteLine("| ║ 4. Display Bill       ║ |");
             Console.WriteLine("| ║ 5. Clear All          ║ |");
+            Console.WriteLine("| ║ 6. Save to file       ║ |");
             Console.WriteLine("| ║ 0. Exit               ║ |");
             Console.WriteLine("| ╚═══════════════════════╝ |");
             Console.WriteLine("|                           |");
@@ -231,5 +236,42 @@ namespace CafeBillApp
             Console.WriteLine("{0,-25}{1,10}", "Total GST", $"${gstAmount:F2}");
             Console.WriteLine("{0,-25}{1,10}", "Total Amount", $"${totalAmount:F2}");
         }
+        public static void SaveToFile()
+        {
+            if (bill.Count == 0)
+            {
+                Console.WriteLine("There are no items to save.");
+                return;
+            }
+
+            Console.Write("Enter the file name (1–10 characters): ");
+            string filename = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(filename) || filename.Length < 1 || filename.Length > 10)
+            {
+                Console.WriteLine("Invalid file name.");
+                return;
+            }
+
+            string fullPath = filename + ".csv";
+
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(fullPath))
+                {
+                    foreach (var item in bill)
+                    {
+                        writer.WriteLine($"{item.Description},{item.Price:F2}");
+                    }
+                }
+
+                Console.WriteLine($"Write to file {fullPath} was successful.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error writing file: {ex.Message}");
+            }
+        }
+
     }
 }
