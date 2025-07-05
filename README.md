@@ -29,14 +29,14 @@
 ╔═════════════════════════════╗
 ║         Monk's Cafe         ║
 ╠═════════════════════════════╣
-║ 1. Add Item                ║
-║ 2. Remove Item             ║
-║ 3. Add Tip                 ║
-║ 4. Display Bill            ║
-║ 5. Clear All               ║
-║ 6. Save to file            ║
-║ 7. Load from file          ║
-║ 0. Exit                    ║
+║ 1. Add Item                 ║
+║ 2. Remove Item              ║
+║ 3. Add Tip                  ║
+║ 4. Display Bill             ║
+║ 5. Clear All                ║
+║ 6. Save to file             ║
+║ 7. Load from file           ║
+║ 0. Exit                     ║
 ╚═════════════════════════════╝
 ```
 
