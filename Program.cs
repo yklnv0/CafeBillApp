@@ -23,6 +23,9 @@ namespace CafeBillApp
                     case "1":
                         AddItem();
                         break;
+                    case "4":
+                        DisplayBill();
+                        break;
                     case "0":
                         Console.WriteLine("Goodbye!");
                         return;
@@ -30,15 +33,45 @@ namespace CafeBillApp
                         Console.WriteLine("Invalid choice. Try again.");
                         break;
                 }
+
             }
         }
+        public static void DisplayBill()
+        {
+            if (bill.Count == 0)
+            {
+                Console.WriteLine("There are no items in the bill to display.");
+                return;
+            }
+
+            Console.WriteLine("\nDescription\t\tPrice");
+            Console.WriteLine("-------------------------------");
+
+            double netTotal = 0;
+            foreach (var item in bill)
+            {
+                Console.WriteLine($"{item.Description.PadRight(20)} ${item.Price:F2}");
+                netTotal += item.Price;
+            }
+
+            double gst = Math.Round(netTotal * 0.05, 2);
+            double total = netTotal + gst;
+
+            Console.WriteLine("-------------------------------");
+            Console.WriteLine($"Net Total:\t\t${netTotal:F2}");
+            Console.WriteLine($"GST Amount:\t\t${gst:F2}");
+            Console.WriteLine($"Total Amount:\t\t${total:F2}");
+        }
+
 
         static void ShowMenu()
         {
             Console.WriteLine("\nMonk's Cafe");
             Console.WriteLine("1. Add Item");
+            Console.WriteLine("4. Display Bill");
             Console.WriteLine("0. Exit");
         }
+
 
         public static void AddItem()
         {
