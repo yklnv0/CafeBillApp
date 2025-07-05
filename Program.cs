@@ -30,6 +30,9 @@ namespace CafeBillApp
                     case "4":
                         DisplayBill();
                         break;
+                    case "5":
+                        ClearAll();
+                        break;
                     case "0":
                         Console.WriteLine("Goodbye!");
                         return;
@@ -51,6 +54,7 @@ namespace CafeBillApp
             Console.WriteLine("| ║ 2. Remove Item        ║ |");
             Console.WriteLine("| ║ 3. Add Tip            ║ |");
             Console.WriteLine("| ║ 4. Display Bill       ║ |");
+            Console.WriteLine("| ║ 5. Clear All          ║ |");
             Console.WriteLine("| ║ 0. Exit               ║ |");
             Console.WriteLine("| ╚═══════════════════════╝ |");
             Console.WriteLine("|                           |");
@@ -125,6 +129,18 @@ namespace CafeBillApp
             {
                 Console.WriteLine("Invalid input.");
             }
+        }
+        public static void ClearAll()
+        {
+            if (bill.Count == 0)
+            {
+                Console.WriteLine("There are no items to clear.");
+                return;
+            }
+
+            bill.Clear();
+            tipAmount = 0;
+            Console.WriteLine("All items have been cleared.");
         }
 
         public static void AddTip()
