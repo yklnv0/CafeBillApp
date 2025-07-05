@@ -37,6 +37,9 @@ namespace CafeBillApp
                     case "6":
                         SaveToFile();
                         break;
+                    case "7":
+                        LoadFromFile();
+                        break;
                     case "0":
                         Console.WriteLine("Goodbye!");
                         return;
@@ -60,6 +63,7 @@ namespace CafeBillApp
             Console.WriteLine("| ║ 4. Display Bill       ║ |");
             Console.WriteLine("| ║ 5. Clear All          ║ |");
             Console.WriteLine("| ║ 6. Save to file       ║ |");
+            Console.WriteLine("| ║ 7. Load from file     ║ |");
             Console.WriteLine("| ║ 0. Exit               ║ |");
             Console.WriteLine("| ╚═══════════════════════╝ |");
             Console.WriteLine("|                           |");
@@ -272,6 +276,63 @@ namespace CafeBillApp
                 Console.WriteLine($"Error writing file: {ex.Message}");
             }
         }
+        public static void LoadFromFile()
+        {
+            Console.Write("Enter the file name to load items from (without .csv): ");
+            string filename = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(filename) || filename.Length < 1 || filename.Length > 10)
+            {
+                Console.WriteLine("Invalid file name.");
+                return;
+            }
+
+            string fullPath = filename + ".csv";
+
+            if (!File.Exists(fullPath))
+            {
+                Console.WriteLine("File not found.");
+                return;
+            }
+
+            try
+            {
+                var lines = File.ReadAllLines(fullPath);
+                var loadedItems = new List<MenuItem>();
+
+                foreach (var line in lines)
+                {
+                    var parts = line.Split(',');
+                    if (parts.Length != 2) continue;
+
+                    string description = parts[0].Trim();
+                    if (!double.TryParse(parts[1], out double price) || price <= 0)
+                        continue;
+
+                    if (description.Length < 3 || description.Length > 20)
+                        continue;
+
+                    loadedItems.Add(new MenuItem(description, price));
+                    if (loadedItems.Count == 5)
+                        break;
+                }
+
+                if (loadedItems.Count == 0)
+                {
+                    Console.WriteLine("No valid items found in file.");
+                    return;
+                }
+
+                bill = loadedItems;
+                tipAmount = 0;
+                Console.WriteLine($"Read from {fullPath} was successful.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading file: {ex.Message}");
+            }
+        }
+
 
     }
 }
