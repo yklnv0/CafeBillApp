@@ -13,14 +13,12 @@ namespace CafeBillApp
         static void Main()
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
-
-            // Меню виводиться лише один раз
             ShowMenu();
 
             while (true)
             {
                 Console.Write("\nEnter your choice: ");
-                string input = Console.ReadLine();
+                string input = Console.ReadLine()?.Trim();
 
                 switch (input)
                 {
@@ -55,7 +53,6 @@ namespace CafeBillApp
             }
         }
 
-
         static void ShowMenu()
         {
             Console.WriteLine("+---------------------------+");
@@ -80,36 +77,32 @@ namespace CafeBillApp
         {
             if (bill.Count >= 5)
             {
-                Console.WriteLine("Не можна додати більше 5 товарів.");
+                Console.WriteLine("Cannot add more than 5 items.");
                 return;
             }
 
             string description;
-            do
+            while (true)
             {
-                Console.Write("Введіть назву товару (3–20 символів): ");
+                Console.Write("Enter product description (3–20 chars): ");
                 description = Console.ReadLine();
-                if (string.IsNullOrWhiteSpace(description) || description.Length < 3 || description.Length > 20)
-                {
-                    Console.WriteLine("❗ Назва має бути від 3 до 20 символів.");
-                    description = null; // щоб повторити
-                }
-            } while (description == null);
+                if (!string.IsNullOrWhiteSpace(description) && description.Length >= 3 && description.Length <= 20)
+                    break;
+                Console.WriteLine("Description must be between 3 and 20 characters.");
+            }
 
             double price;
             while (true)
             {
-                Console.Write("Введіть ціну товару (> 0): ");
+                Console.Write("Enter product price (> 0): ");
                 if (double.TryParse(Console.ReadLine(), out price) && price > 0)
                     break;
-
-                Console.WriteLine("❗ Ціна має бути додатнім числом.");
+                Console.WriteLine("Price must be a positive number.");
             }
 
             bill.Add(new MenuItem(description, price));
-            Console.WriteLine("✅ Товар успішно додано.");
+            Console.WriteLine("Item successfully added.");
         }
-
 
         public static void RemoveItem()
         {
@@ -119,17 +112,17 @@ namespace CafeBillApp
                 return;
             }
 
-            Console.WriteLine("\nItemNo\tDescription\t\tPrice");
-            Console.WriteLine("--------------------------------------");
-
-            for (int i = 0; i < bill.Count; i++)
-            {
-                Console.WriteLine($"{i + 1}\t{bill[i].Description.PadRight(20)} ${bill[i].Price:F2}");
-            }
-
             while (true)
             {
-                Console.Write("Enter the item number to remove (1–{0}) or 0 to cancel: ", bill.Count);
+                Console.WriteLine("\nItemNo\tDescription\t\tPrice");
+                Console.WriteLine("--------------------------------------");
+
+                for (int i = 0; i < bill.Count; i++)
+                {
+                    Console.WriteLine($"{i + 1}\t{bill[i].Description.PadRight(20)} ${bill[i].Price:F2}");
+                }
+
+                Console.Write($"Enter the item number to remove (1–{bill.Count}) or 0 to cancel: ");
                 string input = Console.ReadLine();
 
                 if (int.TryParse(input, out int index))
@@ -137,24 +130,19 @@ namespace CafeBillApp
                     if (index == 0)
                     {
                         Console.WriteLine("Operation canceled.");
-                        break;
+                        return;
                     }
-                    else if (index >= 1 && index <= bill.Count)
+
+                    if (index >= 1 && index <= bill.Count)
                     {
                         var removed = bill[index - 1];
                         bill.RemoveAt(index - 1);
                         Console.WriteLine($"Item \"{removed.Description}\" removed successfully.");
-                        break;
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Please enter a number between 1 and {bill.Count}, or 0 to cancel.");
+                        return;
                     }
                 }
-                else
-                {
-                    Console.WriteLine("Invalid input. Please enter a number.");
-                }
+
+                Console.WriteLine("Invalid input. Please try again.");
             }
         }
 
@@ -166,21 +154,28 @@ namespace CafeBillApp
                 return;
             }
 
-            Console.Write("Are you sure you want to clear all items? (y/n): ");
-            string response = Console.ReadLine()?.Trim().ToLower();
-
-            if (response == "y" || response == "yes")
+            while (true)
             {
-                bill.Clear();
-                tipAmount = 0;
-                Console.WriteLine("All items have been cleared.");
-            }
-            else
-            {
-                Console.WriteLine("Clear operation cancelled.");
+                Console.Write("Are you sure you want to clear all items? (y/n): ");
+                string response = Console.ReadLine()?.Trim().ToLower();
+                if (response == "y" || response == "yes")
+                {
+                    bill.Clear();
+                    tipAmount = 0;
+                    Console.WriteLine("All items have been cleared.");
+                    return;
+                }
+                else if (response == "n" || response == "no")
+                {
+                    Console.WriteLine("Clear operation cancelled.");
+                    return;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid response. Please enter 'y' or 'n'.");
+                }
             }
         }
-
 
         public static void AddTip()
         {
@@ -190,55 +185,57 @@ namespace CafeBillApp
                 return;
             }
 
-            double netTotal = bill.Sum(item => item.Price);
+            double netTotal = bill.Sum(i => i.Price);
 
-            Console.WriteLine();
-            Console.WriteLine($"Net Total: ${netTotal:F2}");
-            Console.WriteLine("1 - Enter tip percentage");
-            Console.WriteLine("2 - Enter fixed tip amount");
-            Console.WriteLine("3 - No tip");
-            Console.Write("Choose an option (1–3): ");
-            string input = Console.ReadLine()?.Trim();
-
-            switch (input)
+            while (true)
             {
-                case "1":
-                    Console.Write("Enter tip percentage (e.g., 10 for 10%): ");
-                    if (double.TryParse(Console.ReadLine(), out double percent) && percent >= 0)
-                    {
-                        tipAmount = Math.Round(netTotal * percent / 100, 2);
-                        Console.WriteLine($"Tip of {percent}% added: ${tipAmount:F2}");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid percentage. Tip not added.");
-                    }
-                    break;
+                Console.WriteLine($"\nNet Total: ${netTotal:F2}");
+                Console.WriteLine("1 - Enter tip percentage");
+                Console.WriteLine("2 - Enter fixed tip amount");
+                Console.WriteLine("3 - No tip");
+                Console.Write("Choose an option (1–3): ");
+                string input = Console.ReadLine()?.Trim();
 
-                case "2":
-                    Console.Write("Enter fixed tip amount (e.g., 5.00): ");
-                    if (double.TryParse(Console.ReadLine(), out double fixedTip) && fixedTip >= 0)
+                if (input == "1")
+                {
+                    while (true)
                     {
-                        tipAmount = fixedTip;
-                        Console.WriteLine($"Fixed tip added: ${tipAmount:F2}");
+                        Console.Write("Enter tip percentage (e.g., 10 for 10%): ");
+                        if (double.TryParse(Console.ReadLine(), out double percent) && percent >= 0)
+                        {
+                            tipAmount = Math.Round(netTotal * percent / 100, 2);
+                            Console.WriteLine($"Tip of {percent}% added: ${tipAmount:F2}");
+                            return;
+                        }
+                        Console.WriteLine("Invalid percentage. Please try again.");
                     }
-                    else
+                }
+                else if (input == "2")
+                {
+                    while (true)
                     {
-                        Console.WriteLine("Invalid amount. Tip not added.");
+                        Console.Write("Enter fixed tip amount (e.g., 5.00): ");
+                        if (double.TryParse(Console.ReadLine(), out double fixedTip) && fixedTip >= 0)
+                        {
+                            tipAmount = fixedTip;
+                            Console.WriteLine($"Fixed tip added: ${tipAmount:F2}");
+                            return;
+                        }
+                        Console.WriteLine("Invalid amount. Please try again.");
                     }
-                    break;
-
-                case "3":
+                }
+                else if (input == "3")
+                {
                     tipAmount = 0;
                     Console.WriteLine("No tip added.");
-                    break;
-
-                default:
-                    Console.WriteLine("Invalid choice. Tip not added.");
-                    break;
+                    return;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid choice. Please enter 1, 2, or 3.");
+                }
             }
         }
-
 
         public static void DisplayBill()
         {
@@ -281,13 +278,16 @@ namespace CafeBillApp
                 return;
             }
 
-            Console.Write("Enter the file name (1–10 characters, without extension): ");
-            string filename = Console.ReadLine()?.Trim();
-
-            if (string.IsNullOrEmpty(filename) || filename.Length < 1 || filename.Length > 10)
+            string filename;
+            while (true)
             {
-                Console.WriteLine("Invalid file name. It must be 1 to 10 characters long.");
-                return;
+                Console.Write("Enter the file name (1–10 characters): ");
+                filename = Console.ReadLine()?.Trim();
+
+                if (!string.IsNullOrEmpty(filename) && filename.Length <= 10)
+                    break;
+
+                Console.WriteLine("Invalid file name.");
             }
 
             string fullPath = filename + ".csv";
@@ -298,12 +298,11 @@ namespace CafeBillApp
                 {
                     foreach (var item in bill)
                     {
-                        // Зберігаємо лише назву товару та ціну
                         writer.WriteLine($"{item.Description},{item.Price:F2}");
                     }
                 }
 
-                Console.WriteLine($"\n✔ File '{fullPath}' was saved successfully.");
+                Console.WriteLine($"✔ File '{fullPath}' was saved successfully.");
             }
             catch (Exception ex)
             {
@@ -311,16 +310,18 @@ namespace CafeBillApp
             }
         }
 
-
         public static void LoadFromFile()
         {
-            Console.Write("Enter the file name to load items from (without .csv): ");
-            string filename = Console.ReadLine()?.Trim();
-
-            if (string.IsNullOrEmpty(filename) || filename.Length < 1 || filename.Length > 10)
+            string filename;
+            while (true)
             {
-                Console.WriteLine("Invalid file name. It must be 1–10 characters.");
-                return;
+                Console.Write("Enter the file name to load items from (without .csv): ");
+                filename = Console.ReadLine()?.Trim();
+
+                if (!string.IsNullOrEmpty(filename) && filename.Length <= 10)
+                    break;
+
+                Console.WriteLine("Invalid file name.");
             }
 
             string fullPath = filename + ".csv";
@@ -339,24 +340,16 @@ namespace CafeBillApp
                 foreach (string line in lines)
                 {
                     var parts = line.Split(',');
-
-                    if (parts.Length != 2)
-                        continue;
+                    if (parts.Length != 2) continue;
 
                     string description = parts[0].Trim();
                     string priceText = parts[1].Trim();
 
-                    // Перевірка обмежень
-                    if (description.Length < 3 || description.Length > 20)
-                        continue;
-
-                    if (!double.TryParse(priceText, out double price) || price <= 0)
-                        continue;
+                    if (description.Length < 3 || description.Length > 20) continue;
+                    if (!double.TryParse(priceText, out double price) || price <= 0) continue;
 
                     loadedItems.Add(new MenuItem(description, price));
-
-                    if (loadedItems.Count == 5)
-                        break;
+                    if (loadedItems.Count == 5) break;
                 }
 
                 if (loadedItems.Count == 0)
@@ -367,16 +360,12 @@ namespace CafeBillApp
 
                 bill = loadedItems;
                 tipAmount = 0;
-                Console.WriteLine($"\n✔ Loaded {loadedItems.Count} items from '{fullPath}' successfully.");
+                Console.WriteLine($"✔ Loaded {loadedItems.Count} items from '{fullPath}'.");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"❌ Error reading the file: {ex.Message}");
             }
         }
-
-
-
-
     }
 }
