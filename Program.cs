@@ -11,10 +11,14 @@ namespace CafeBillApp
 
         static void Main()
         {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+            // Меню виводиться лише один раз
+            ShowMenu();
+
             while (true)
             {
-                ShowMenu();
-                Console.Write("Enter your choice: ");
+                Console.Write("\nEnter your choice: ");
                 string input = Console.ReadLine();
 
                 switch (input)
@@ -50,6 +54,7 @@ namespace CafeBillApp
             }
         }
 
+
         static void ShowMenu()
         {
             Console.WriteLine("+---------------------------+");
@@ -74,28 +79,36 @@ namespace CafeBillApp
         {
             if (bill.Count >= 5)
             {
-                Console.WriteLine("You can't add more than 5 items.");
+                Console.WriteLine("Не можна додати більше 5 товарів.");
                 return;
             }
 
-            Console.Write("Enter description: ");
-            string description = Console.ReadLine();
-            if (string.IsNullOrWhiteSpace(description) || description.Length < 3 || description.Length > 20)
+            string description;
+            do
             {
-                Console.WriteLine("Description must be between 3 and 20 characters.");
-                return;
-            }
+                Console.Write("Введіть назву товару (3–20 символів): ");
+                description = Console.ReadLine();
+                if (string.IsNullOrWhiteSpace(description) || description.Length < 3 || description.Length > 20)
+                {
+                    Console.WriteLine("❗ Назва має бути від 3 до 20 символів.");
+                    description = null; // щоб повторити
+                }
+            } while (description == null);
 
-            Console.Write("Enter price: ");
-            if (!double.TryParse(Console.ReadLine(), out double price) || price <= 0)
+            double price;
+            while (true)
             {
-                Console.WriteLine("Price must be a positive number.");
-                return;
+                Console.Write("Введіть ціну товару (> 0): ");
+                if (double.TryParse(Console.ReadLine(), out price) && price > 0)
+                    break;
+
+                Console.WriteLine("❗ Ціна має бути додатнім числом.");
             }
 
             bill.Add(new MenuItem(description, price));
-            Console.WriteLine("Add item was successful.");
+            Console.WriteLine("✅ Товар успішно додано.");
         }
+
 
         public static void RemoveItem()
         {
