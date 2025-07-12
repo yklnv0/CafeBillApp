@@ -112,7 +112,7 @@ namespace CafeBillApp
                 return;
             }
 
-            // Виводимо список лише один раз перед циклом введення
+            // Виводимо список лише один раз
             Console.WriteLine("\nItemNo\tDescription\t\tPrice");
             Console.WriteLine("--------------------------------------");
             for (int i = 0; i < bill.Count; i++)
@@ -120,7 +120,7 @@ namespace CafeBillApp
                 Console.WriteLine($"{i + 1}\t{bill[i].Description.PadRight(20)} ${bill[i].Price:F2}");
             }
 
-            // Запит на введення номера товару
+            // Запит номера
             while (true)
             {
                 Console.Write($"Enter the item number to remove or 0 to cancel: ");
@@ -138,6 +138,10 @@ namespace CafeBillApp
                     {
                         bill.RemoveAt(index - 1);
                         Console.WriteLine("Remove item was successful.");
+
+                        // Після видалення — пропозиція чайових
+                        AddTip();
+
                         return;
                     }
                 }
@@ -145,6 +149,7 @@ namespace CafeBillApp
                 Console.WriteLine("Invalid input. Please enter a valid item number.");
             }
         }
+
 
 
         public static void ClearAll()
