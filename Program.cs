@@ -237,6 +237,7 @@ namespace CafeBillApp
             }
         }
 
+
         public static void DisplayBill()
         {
             if (bill.Count == 0)
