@@ -123,7 +123,7 @@ namespace CafeBillApp
             // Запит на введення номера товару
             while (true)
             {
-                Console.Write($"Enter the item number to remove (1–{bill.Count}) or 0 to cancel: ");
+                Console.Write($"Enter the item number to remove or 0 to cancel: ");
                 string input = Console.ReadLine()?.Trim();
 
                 if (int.TryParse(input, out int index))
@@ -136,9 +136,8 @@ namespace CafeBillApp
 
                     if (index >= 1 && index <= bill.Count)
                     {
-                        var removed = bill[index - 1];
                         bill.RemoveAt(index - 1);
-                        Console.WriteLine($"Item \"{removed.Description}\" removed successfully.");
+                        Console.WriteLine("Remove item was successful.");
                         return;
                     }
                 }
